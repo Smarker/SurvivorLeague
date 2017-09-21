@@ -13,18 +13,13 @@ contract SurvivorLeague {
   address chairperson;
   mapping (address => bytes3[]) picks;
 
-  function SurvivorLeague(address[] c) {
+  function SurvivorLeague() {
     chairperson = msg.sender;
-
-    for (uint i = 0; i < c.length; i++) {
-      contestants.push(Contestant({
-        id: c[i],
-        active: true
-      }));
-    } 
   }
 
   function setWinners(bytes3[] teams) {
+    require(msg.sender == chairperson);
+
     for (uint i = 0; i < contestants.length; ++i) {
       bool hasWinner;
       for (uint j = 0; j < teams.length; ++j) {
@@ -39,6 +34,15 @@ contract SurvivorLeague {
     }
 
     ++currentWeek;
+  }
+
+  function addContestant(address contestant) {
+    require(msg.sender == chairperson);
+    require(currentWeek == 0);
+    contestants.push(Contestant({
+      id: contestant, 
+      active: true
+    }));
   }
 
   function setPick(bytes3 team) {
